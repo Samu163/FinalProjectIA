@@ -80,8 +80,37 @@ public class FSM : MonoBehaviour
                 // Reached exit
                 Debug.Log("Exit reached. Spawning zombies and starting Phase 2.");
                 SpawnZombies();
+                state = GoToPhase2;
+                GameManager.Instance.StartPhase2();
+                yield break;
+            }
+        }
+    }
+
+    IEnumerator GoToPhase2()
+    {
+        while (true)
+        {
+            Transform nearestCivilian = FindNearest(civilians);
+
+            if (Vector3.Distance(transform.position, GameManager.Instance.spawnPointPhase2.position) < stealDistance)
+            {
                 state = EscapeOrRescue;
                 yield break;
+            }
+            else
+            {
+                agent.SetDestination(GameManager.Instance.spawnPointPhase2.position);
+
+                while (Vector3.Distance(transform.position, GameManager.Instance.spawnPointPhase2.position) > stealDistance)
+                {
+                    if (IsDetected())
+                    {
+                        state = Evade;
+                        yield break;
+                    }
+                    yield return wait;
+                }
             }
         }
     }
@@ -207,5 +236,20 @@ public class FSM : MonoBehaviour
     {
         Debug.Log("Zombies spawned at exit!");
         // Implementation for spawning zombies
+    }
+
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Zombie"))
+        {
+            Debug.Log("Player caught by zombie. Game over!");
+            // Implementation for game over
+        }
+        if (collision.gameObject.CompareTag("Police"))
+        {
+            Debug.Log("Player caught by police. Game over!");
+            // Implementation for game over
+        }
     }
 }

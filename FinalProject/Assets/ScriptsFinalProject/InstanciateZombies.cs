@@ -11,10 +11,10 @@ public class ZombieSpawner : MonoBehaviour
 
     void Start()
     {
-        SpawnZombies();
+        //SpawnZombies();
     }
 
-    void SpawnZombies()
+    public void SpawnZombies()
     {
         for (int i = 0; i < numberOfZombies; i++)
         {
