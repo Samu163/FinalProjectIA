@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     public CinemachineVirtualCamera cameraPhase2;
     public ZombieSpawner zombieSpawner;
     public GroundNavigation groundNavigation;
-
+    public BoxInstantiator boxInstantiator;
 
 
     public static GameManager Instance;
@@ -47,8 +47,8 @@ public class GameManager : MonoBehaviour
 
     public void StartPhase2()
     {
-        //phase2Gate.SetActive(false);
-        groundNavigation.RemoveObjectAndRebake(phase2Gate);
+        phase2Gate.SetActive(false);
+        //groundNavigation.RemoveObjectAndRebake(phase2Gate);
         //player.transform.position = spawnPointPhase2.position;
         zombieSpawner.SpawnZombies();
     }
