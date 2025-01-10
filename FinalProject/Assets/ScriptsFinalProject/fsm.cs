@@ -12,6 +12,7 @@ public class FSM : MonoBehaviour
     public float stealDistance = 2f;
     public float safeDistance = 10f;
     public string statename = "Search Supplies";
+    public static FSM Instance;
 
     private UnityEngine.AI.NavMeshAgent agent;
     private WaitForSeconds wait = new WaitForSeconds(0.05f);
@@ -20,6 +21,7 @@ public class FSM : MonoBehaviour
 
     void Start()
     {
+        Instance = this;
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         state = SearchSupplies;
         StartCoroutine(StateMachine());

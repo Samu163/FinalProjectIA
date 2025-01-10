@@ -20,5 +20,14 @@ public class BoxInstantiator : MonoBehaviour
 
     }
 
+    public void ActivateBoxes()
+    {
+        foreach (var position in spawnPositions)
+        {
+            GameObject box = Instantiate(boxPrefab, position.position, Quaternion.identity);
+            boxes.Add(box);
+        }
+    }
+
 
 }

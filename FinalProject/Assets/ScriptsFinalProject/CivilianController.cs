@@ -16,7 +16,12 @@ public class CivilianController : MonoBehaviour
     private bool isFollowing = false; 
     private CivilianController[] allCivilians; 
     private NavMeshAgent agent; 
-    private Vector3 flockingDirection; 
+    private Vector3 flockingDirection;
+
+    public void Init(Transform playerTransform)
+    {
+        player = playerTransform;
+    }
 
     void Start()
     {

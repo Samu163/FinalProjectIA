@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour
     public Transform spawnPointPhase2;
     public GameObject phase2Gate;
 
-    public GameObject player;
+    public FSM player;
     public CinemachineVirtualCamera cameraPhase1;
     public CinemachineVirtualCamera cameraPhase2;
     public ZombieSpawner zombieSpawner;
@@ -46,6 +46,7 @@ public class GameManager : MonoBehaviour
     public void StartPhase2()
     {
         player.transform.position = spawnPointPhase2.position;
+        civilianInstantiator.InstantiateCivilians(5);
         zombieSpawner.SpawnZombies();
     }
 
