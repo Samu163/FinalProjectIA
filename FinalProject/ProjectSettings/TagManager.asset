@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Police
   - Zombie
+  - robber
   layers:
   - Default
   - TransparentFX
