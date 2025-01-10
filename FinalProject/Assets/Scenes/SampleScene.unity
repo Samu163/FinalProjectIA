@@ -4698,14 +4698,12 @@ MonoBehaviour:
   spawnPointPhase2: {fileID: 1732333890}
   phase2Gate: {fileID: 776481259}
   player: {fileID: 957058676}
-  policePrefab: {fileID: 0}
-  zombiePrefab: {fileID: 0}
-  rewardPrefab: {fileID: 0}
   cameraPhase1: {fileID: 0}
   cameraPhase2: {fileID: 0}
   zombieSpawner: {fileID: 1290489773}
   groundNavigation: {fileID: 0}
   boxInstantiator: {fileID: 1469052051}
+  civilianInstantiator: {fileID: 0}
 --- !u!4 &386538913
 Transform:
   m_ObjectHideFlags: 0
@@ -9510,6 +9508,12 @@ PrefabInstance:
 --- !u!1 &957058676 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8750523923084558287, guid: ba934ac3079b7bb4e893f92b9e315764,
+    type: 3}
+  m_PrefabInstance: {fileID: 6466910443600425675}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &957058688 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8750523923084649391, guid: ba934ac3079b7bb4e893f92b9e315764,
     type: 3}
   m_PrefabInstance: {fileID: 6466910443600425675}
   m_PrefabAsset: {fileID: 0}
@@ -22377,6 +22381,79 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 494f6d43e170e9145bc7865d243ee00b, type: 3}
+--- !u!1001 &882020935613126204
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3604147549011300052, guid: 22b930d46e7cf454e9526bf465f1f43a,
+        type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 957058688}
+    - target: {fileID: 5448579926621041934, guid: 22b930d46e7cf454e9526bf465f1f43a,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.71153295
+      objectReference: {fileID: 0}
+    - target: {fileID: 5448579926621041934, guid: 22b930d46e7cf454e9526bf465f1f43a,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.44190645
+      objectReference: {fileID: 0}
+    - target: {fileID: 5448579926621041934, guid: 22b930d46e7cf454e9526bf465f1f43a,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 2.592714
+      objectReference: {fileID: 0}
+    - target: {fileID: 5448579926621041934, guid: 22b930d46e7cf454e9526bf465f1f43a,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.00000016292068
+      objectReference: {fileID: 0}
+    - target: {fileID: 5448579926621041934, guid: 22b930d46e7cf454e9526bf465f1f43a,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5448579926621041934, guid: 22b930d46e7cf454e9526bf465f1f43a,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5448579926621041934, guid: 22b930d46e7cf454e9526bf465f1f43a,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5448579926621041934, guid: 22b930d46e7cf454e9526bf465f1f43a,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5448579926621041934, guid: 22b930d46e7cf454e9526bf465f1f43a,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5448579926621041934, guid: 22b930d46e7cf454e9526bf465f1f43a,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5448579926621268334, guid: 22b930d46e7cf454e9526bf465f1f43a,
+        type: 3}
+      propertyPath: m_Name
+      value: 'Civilian '
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 22b930d46e7cf454e9526bf465f1f43a, type: 3}
 --- !u!1001 &2241987414714218317
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22618,3 +22695,4 @@ SceneRoots:
   - {fileID: 1945357854}
   - {fileID: 1469052052}
   - {fileID: 1214751821}
+  - {fileID: 882020935613126204}
