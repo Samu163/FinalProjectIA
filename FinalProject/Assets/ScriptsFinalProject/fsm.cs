@@ -79,7 +79,6 @@ public class FSM : MonoBehaviour
 
                 // Reached exit
                 Debug.Log("Exit reached. Spawning zombies and starting Phase 2.");
-                SpawnZombies();
                 state = GoToPhase2;
                 GameManager.Instance.StartPhase2();
                 yield break;
@@ -89,31 +88,20 @@ public class FSM : MonoBehaviour
 
     IEnumerator GoToPhase2()
     {
-        while (true)
-        {
-            Transform nearestCivilian = FindNearest(civilians);
+        Debug.Log("State: GoToPhase2");
 
-            if (Vector3.Distance(transform.position, GameManager.Instance.spawnPointPhase2.position) < stealDistance)
-            {
-                state = EscapeOrRescue;
-                yield break;
-            }
-            else
-            {
-                agent.SetDestination(GameManager.Instance.spawnPointPhase2.position);
+        agent.enabled = false;
 
-                while (Vector3.Distance(transform.position, GameManager.Instance.spawnPointPhase2.position) > stealDistance)
-                {
-                    if (IsDetected())
-                    {
-                        state = Evade;
-                        yield break;
-                    }
-                    yield return wait;
-                }
-            }
-        }
+        transform.position = GameManager.Instance.spawnPointPhase2.position;
+
+        agent.enabled = true;
+
+        agent.SetDestination(GameManager.Instance.spawnPointPhase2.position);
+
+        yield return null;
+        state = EscapeOrRescue;
     }
+
 
     IEnumerator EscapeOrRescue()
     {
@@ -229,15 +217,15 @@ public class FSM : MonoBehaviour
                 return true;
             }
         }
+        for (int i = 0; i < GameManager.Instance.zombieSpawner.zombies.Count; i++)
+        {
+            if (Vector3.Distance(transform.position, GameManager.Instance.zombieSpawner.zombies[i].transform.position) < detectionRadius)
+            {
+                return true;
+            }
+        }
         return false;
     }
-
-    private void SpawnZombies()
-    {
-        Debug.Log("Zombies spawned at exit!");
-        // Implementation for spawning zombies
-    }
-
 
     private void OnCollisionEnter(Collision collision)
     {

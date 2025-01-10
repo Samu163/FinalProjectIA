@@ -9,14 +9,12 @@ public class GameManager : MonoBehaviour
     public GameObject phase2Gate;
 
     public GameObject player;
-    public GameObject policePrefab;
-    public GameObject zombiePrefab;
-    public GameObject rewardPrefab;
     public CinemachineVirtualCamera cameraPhase1;
     public CinemachineVirtualCamera cameraPhase2;
     public ZombieSpawner zombieSpawner;
     public GroundNavigation groundNavigation;
     public BoxInstantiator boxInstantiator;
+    public CivilianInstantiator civilianInstantiator;
 
 
     public static GameManager Instance;
@@ -47,9 +45,7 @@ public class GameManager : MonoBehaviour
 
     public void StartPhase2()
     {
-        phase2Gate.SetActive(false);
-        //groundNavigation.RemoveObjectAndRebake(phase2Gate);
-        //player.transform.position = spawnPointPhase2.position;
+        player.transform.position = spawnPointPhase2.position;
         zombieSpawner.SpawnZombies();
     }
 

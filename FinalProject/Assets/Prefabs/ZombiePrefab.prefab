@@ -215,6 +215,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: ZombiePrefab
       objectReference: {fileID: 0}
+    - target: {fileID: 856601670117699726, guid: b14953694d54eea4eb66f453e525024c,
+        type: 3}
+      propertyPath: m_TagString
+      value: Zombie
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -276,7 +281,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
+  m_Speed: 0.5
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120

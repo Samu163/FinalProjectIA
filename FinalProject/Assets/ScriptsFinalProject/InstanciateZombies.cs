@@ -8,6 +8,7 @@ public class ZombieSpawner : MonoBehaviour
     public GameObject zombiePrefab;
     public int numberOfZombies = 10;
     public float spawnRadius = 20f;
+    public List<GameObject> zombies = new List<GameObject>();
 
     void Start()
     {
@@ -22,7 +23,8 @@ public class ZombieSpawner : MonoBehaviour
 
             if (NavMesh.SamplePosition(spawnPosition, out NavMeshHit hit, 2f, NavMesh.AllAreas))
             {
-                Instantiate(zombiePrefab, hit.position, Quaternion.identity);
+                var zombie = Instantiate(zombiePrefab, hit.position, Quaternion.identity);
+                zombies.Add(zombie);
             }
         }
     }
