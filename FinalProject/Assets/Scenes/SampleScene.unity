@@ -6732,9 +6732,9 @@ GameObject:
   - component: {fileID: 589033065}
   - component: {fileID: 589033064}
   - component: {fileID: 589033063}
-  - component: {fileID: 589033062}
   - component: {fileID: 589033061}
   - component: {fileID: 589033060}
+  - component: {fileID: 589033062}
   - component: {fileID: 589033067}
   m_Layer: 0
   m_Name: Sphere
@@ -6792,10 +6792,10 @@ MonoBehaviour:
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 2
-      BranchSizes: 01000000
-    VectorActionSize: 
+      BranchSizes: 
+    VectorActionSize: 02000000
     VectorActionDescriptions: []
-    VectorActionSpaceType: 0
+    VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 5022602860645237092, guid: ad1d856319980244785ae7317faca002, type: 3}
   m_InferenceDevice: 3

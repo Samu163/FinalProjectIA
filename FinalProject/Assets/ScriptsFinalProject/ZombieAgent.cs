@@ -5,7 +5,7 @@ using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
 
-public class ZombieAgent : Agent
+public class RollerAgent : Agent
 {
     Rigidbody rBody;
     void Start()
@@ -21,13 +21,13 @@ public class ZombieAgent : Agent
         {
             this.rBody.angularVelocity = Vector3.zero;
             this.rBody.velocity = Vector3.zero;
-            this.transform.localPosition = new Vector3(-167.77f, 0.5f, 31.41f);
+            this.transform.localPosition = new Vector3(0, 0.5f, 0);
         }
 
         // Move the target to a new spot
-        Target.localPosition = new Vector3((Random.value * 8 - 4) + -167.77f,
+        Target.localPosition = new Vector3(Random.value * 8 - 4,
                                            0.5f,
-                                           (Random.value * 8 - 4) + 31.41f);
+                                           Random.value * 8 - 4);
     }
     public override void CollectObservations(VectorSensor sensor)
     {
