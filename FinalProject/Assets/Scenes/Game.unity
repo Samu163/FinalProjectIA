@@ -4353,8 +4353,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.00034518924, y: 0.8165947, z: -0.5772065, w: 0.0023794512}
-  m_LocalPosition: {x: -0.8191383, y: 10.9847555, z: 2.1714897}
+  m_LocalRotation: {x: 0.012212662, y: 0.8494366, z: -0.5270603, w: 0.02271478}
+  m_LocalPosition: {x: 9.9230385, y: 9.561005, z: 0.9709283}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5094,9 +5094,8 @@ MonoBehaviour:
   cameraPhase1: {fileID: 1258437530}
   cameraPhase2: {fileID: 492059340}
   zombieSpawner: {fileID: 1290489773}
-  groundNavigation: {fileID: 0}
   boxInstantiator: {fileID: 1469052051}
-  uiController: {fileID: 0}
+  uiController: {fileID: 1104323372}
 --- !u!4 &386538913
 Transform:
   m_ObjectHideFlags: 0
