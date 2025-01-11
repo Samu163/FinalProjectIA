@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class LeaderMovement : MonoBehaviour
 {
-    public float speed = 3f; 
-    public float rotationSpeed = 2f; 
-    public float changeTargetInterval = 2f; 
+    public float speed = 3f;
+    public float rotationSpeed = 2f;
+    public float changeTargetInterval = 2f;
 
-    private Vector3 targetPosition; 
-    private float boundaryX = 10f; 
-    private float boundaryY = 5f; 
-    private float boundaryZ = 10f; 
-    public float InfluenceDistance = 5f;
+    private Vector3 targetPosition;
+    public Transform initialPosition; // Nueva referencia para ajustar límites
+    public float boundaryX = 10f;
+    public float boundaryZ = 10f;
+    public float influenceDistance = 5f;
 
     void Start()
     {
@@ -27,28 +27,20 @@ public class LeaderMovement : MonoBehaviour
 
     void MoveTowardsTarget()
     {
-        // Calculate the direction towards the target position
         Vector3 direction = targetPosition - transform.position;
-
-        // If it is not close to the target position
         if (direction.magnitude > 0.1f)
         {
-            // Rotate towards the target position
             Quaternion targetRotation = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-
-            // Move forward
             transform.Translate(Vector3.forward * speed * Time.deltaTime);
         }
     }
 
     void SetNewTargetPosition()
     {
-        // Generate a new random position within the boundaries
-        float randomX = Random.Range(-boundaryX, boundaryX);
-        float randomY = Random.Range(-boundaryY, boundaryY); 
-        float randomZ = Random.Range(-boundaryZ, boundaryZ);
-        targetPosition = new Vector3(randomX, randomY, randomZ);
+        float randomX = Random.Range(-boundaryX, boundaryX) + initialPosition.position.x;
+        float randomZ = Random.Range(-boundaryZ, boundaryZ) + initialPosition.position.z;
+        targetPosition = new Vector3(randomX, transform.position.y, randomZ); // Solo XZ
     }
 
     IEnumerator ChangeTargetPositionCoroutine()
@@ -56,8 +48,7 @@ public class LeaderMovement : MonoBehaviour
         while (true)
         {
             yield return new WaitForSeconds(changeTargetInterval);
-            SetNewTargetPosition(); // Change to a new target position
+            SetNewTargetPosition();
         }
     }
 }
-

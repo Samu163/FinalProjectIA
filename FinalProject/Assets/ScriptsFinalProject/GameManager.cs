@@ -12,13 +12,13 @@ public class GameManager : MonoBehaviour
     public CinemachineVirtualCamera cameraPhase1;
     public CinemachineVirtualCamera cameraPhase2;
     public ZombieSpawner zombieSpawner;
-    public GroundNavigation groundNavigation;
     public BoxInstantiator boxInstantiator;
-    public CivilianInstantiator civilianInstantiator;
-
 
     public static GameManager Instance;
-    //public GameObject cameraPhase1;
+
+    private Camera[] allSceneCameras;
+
+    public UiController uiController;
 
     private void Awake()
     {
@@ -26,38 +26,61 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(this.gameObject);
     }
 
-    // Start is called before the first frame update
     void Start()
     {
-        
+        StartPhase1();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public void StartPhase1()
     {
+        ActivateCamera(cameraPhase1);
     }
-
 
     public void StartPhase2()
     {
         player.transform.position = spawnPointPhase2.position;
-        civilianInstantiator.InstantiateCivilians(5);
+
         zombieSpawner.SpawnZombies();
+        ActivateCamera(cameraPhase2);
     }
 
-    public void GoMainMenu()
+    public void WinGame()
     {
-
+        uiController.ShowYouWinPopUp();
+    }
+    public void LoseGame()
+    {
+        uiController.ShowLosePopUp();
     }
 
-    public void StartGame()
+    private void ActivateCamera(CinemachineVirtualCamera activeCamera)
     {
+        allSceneCameras = Camera.allCameras;
+        DisableNonCinemachineCameras();
 
+        cameraPhase1.Priority = activeCamera == cameraPhase1 ? 10 : 0;
+        cameraPhase2.Priority = activeCamera == cameraPhase2 ? 10 : 0;
+    }
+
+    private void DisableNonCinemachineCameras()
+    {
+        foreach (Camera cam in allSceneCameras)
+        {
+            if (!cam.GetComponent<CinemachineBrain>() && cam != null)
+            {
+                cam.enabled = false;
+            }
+        }
+    }
+    private void EnableSpecificCamera(Camera cam)
+    {
+        DisableNonCinemachineCameras();
+        cam.enabled = true;
     }
 
 }

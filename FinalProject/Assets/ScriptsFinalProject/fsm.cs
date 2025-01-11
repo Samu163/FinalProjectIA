@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class FSM : MonoBehaviour
 {
-    public GameObject[] cops;
     public GameObject[] treasures;
     public GameObject exit;
     public Transform[] civilians;
@@ -13,21 +13,21 @@ public class FSM : MonoBehaviour
     public float safeDistance = 10f;
     public string statename = "Search Supplies";
     public static FSM Instance;
-
     private UnityEngine.AI.NavMeshAgent agent;
     private WaitForSeconds wait = new WaitForSeconds(0.05f);
     private delegate IEnumerator State();
     private State state;
+    private State previousState; // Nuevo: Almacena el estado previo
 
     void Start()
     {
         Instance = this;
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
-        state = SearchSupplies;
+        state = Phase1;
         StartCoroutine(StateMachine());
     }
 
-    public void Update()
+    void Update()
     {
         statename = state.Method.Name;
     }
@@ -38,12 +38,19 @@ public class FSM : MonoBehaviour
             yield return StartCoroutine(state());
     }
 
-    IEnumerator SearchSupplies()
+    IEnumerator Phase1()
     {
         Debug.Log("State: Search Supplies");
 
         while (true)
         {
+            if (IsDetected())
+            {
+                previousState = Phase1; // Guardar el estado actual
+                state = Evade;
+                yield break;
+            }
+
             GameObject nearestTreasure = FindNearest(treasures);
 
             if (nearestTreasure != null)
@@ -54,32 +61,31 @@ public class FSM : MonoBehaviour
                 {
                     if (IsDetected())
                     {
+                        previousState = Phase1;
                         state = Evade;
                         yield break;
                     }
                     yield return wait;
                 }
 
-                // Treasure reached
                 Debug.Log("Treasure collected!");
                 nearestTreasure.SetActive(false);
             }
             else
             {
-                // No more treasures, move to exit
                 agent.SetDestination(exit.transform.position);
 
                 while (Vector3.Distance(transform.position, exit.transform.position) > stealDistance)
                 {
                     if (IsDetected())
                     {
+                        previousState = Phase1;
                         state = Evade;
                         yield break;
                     }
                     yield return wait;
                 }
 
-                // Reached exit
                 Debug.Log("Exit reached. Spawning zombies and starting Phase 2.");
                 state = GoToPhase2;
                 GameManager.Instance.StartPhase2();
@@ -93,19 +99,14 @@ public class FSM : MonoBehaviour
         Debug.Log("State: GoToPhase2");
 
         agent.enabled = false;
-
         transform.position = GameManager.Instance.spawnPointPhase2.position;
-
         agent.enabled = true;
-
-        agent.SetDestination(GameManager.Instance.spawnPointPhase2.position);
-
         yield return null;
-        state = EscapeOrRescue;
+
+        state = Phase2;
     }
 
-
-    IEnumerator EscapeOrRescue()
+    IEnumerator Phase2()
     {
         Debug.Log("State: Escape or Rescue");
 
@@ -121,6 +122,7 @@ public class FSM : MonoBehaviour
                 {
                     if (IsDetected())
                     {
+                        previousState = Phase2; // Guardar el estado actual
                         state = Evade;
                         yield break;
                     }
@@ -131,13 +133,13 @@ public class FSM : MonoBehaviour
             }
             else
             {
-                // No civilians nearby, go to car
                 agent.SetDestination(car.position);
 
                 while (Vector3.Distance(transform.position, car.position) > stealDistance)
                 {
                     if (IsDetected())
                     {
+                        previousState = Phase2; // Guardar el estado actual
                         state = Evade;
                         yield break;
                     }
@@ -145,6 +147,7 @@ public class FSM : MonoBehaviour
                 }
 
                 Debug.Log("Car reached. You win!");
+                GameManager.Instance.WinGame();
                 yield break;
             }
         }
@@ -154,15 +157,38 @@ public class FSM : MonoBehaviour
     {
         Debug.Log("State: Evade");
 
-        while (IsDetected())
+        while (true)
         {
-            Vector3 safePoint = FindNearestSafePoint();
-            agent.SetDestination(safePoint);
+            List<GameObject> detectingEnemies = new List<GameObject>();
+
+            foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
+            {
+                PatrollingAI ai = enemy.GetComponent<PatrollingAI>();
+                if (ai != null && ai.visionCamera != null && IsVisibleToCamera(ai.visionCamera))
+                {
+                    detectingEnemies.Add(enemy);
+                }
+            }
+
+            if (detectingEnemies.Count == 0)
+            {
+                Debug.Log("Evaded successfully. Returning to previous state.");
+                state = previousState; // Regresa al estado previo
+                yield break;
+            }
+
+            Vector3 evadeDirection = Vector3.zero;
+            foreach (GameObject enemy in detectingEnemies)
+            {
+                evadeDirection += (transform.position - enemy.transform.position).normalized;
+            }
+
+            evadeDirection /= detectingEnemies.Count;
+            Vector3 evadePoint = transform.position + evadeDirection * safeDistance;
+
+            agent.SetDestination(evadePoint);
             yield return wait;
         }
-
-        Debug.Log("Evaded successfully. Returning to previous task.");
-        state = SearchSupplies;
     }
 
     private GameObject FindNearest(GameObject[] objects)
@@ -204,42 +230,40 @@ public class FSM : MonoBehaviour
         return nearest;
     }
 
-    private Vector3 FindNearestSafePoint()
-    {
-        // Placeholder: return a random point at a safe distance
-        return transform.position + Random.insideUnitSphere * safeDistance;
-    }
-
     private bool IsDetected()
     {
-        for (int i = 0; i < cops.Length; i++)
+        foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
         {
-            if (Vector3.Distance(transform.position, cops[i].transform.position) < detectionRadius)
+            PatrollingAI ai = enemy.GetComponent<PatrollingAI>();
+            if (ai != null && ai.visionCamera != null)
+            {
+                if (IsVisibleToCamera(ai.visionCamera))
+                {
+                    return true;
+                }
+            }
+
+            if (Vector3.Distance(transform.position, enemy.transform.position) < detectionRadius)
             {
                 return true;
             }
         }
-        for (int i = 0; i < GameManager.Instance.zombieSpawner.zombies.Count; i++)
-        {
-            if (Vector3.Distance(transform.position, GameManager.Instance.zombieSpawner.zombies[i].transform.position) < detectionRadius)
-            {
-                return true;
-            }
-        }
+
         return false;
     }
 
+    private bool IsVisibleToCamera(Camera camera)
+    {
+        Vector3 viewportPoint = camera.WorldToViewportPoint(transform.position);
+        return viewportPoint.z > 0 && viewportPoint.x > 0 && viewportPoint.x < 1 && viewportPoint.y > 0 && viewportPoint.y < 1;
+    }
+
+
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Zombie"))
+        if (collision.gameObject.CompareTag("Enemy"))
         {
-            Debug.Log("Player caught by zombie. Game over!");
-            // Implementation for game over
-        }
-        if (collision.gameObject.CompareTag("Police"))
-        {
-            Debug.Log("Player caught by police. Game over!");
-            // Implementation for game over
+            GameManager.Instance.LoseGame();
         }
     }
 }
