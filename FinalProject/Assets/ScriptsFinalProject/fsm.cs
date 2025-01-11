@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Rendering;
+using Unity.VisualScripting;
 
 public class FSM : MonoBehaviour
 {
@@ -8,9 +10,10 @@ public class FSM : MonoBehaviour
     public GameObject exit;
     public Transform[] civilians;
     public Transform car;
-    public float detectionRadius = 15f;
+    public float detectionRadius = 3f;
     public float stealDistance = 2f;
     public float safeDistance = 10f;
+    public float loseDistance = 0.5f;
     public string statename = "Search Supplies";
     public static FSM Instance;
     private UnityEngine.AI.NavMeshAgent agent;
@@ -112,6 +115,13 @@ public class FSM : MonoBehaviour
 
         while (true)
         {
+
+            if (IsDetected())
+            {
+                previousState = Phase1; // Guardar el estado actual
+                state = Evade;
+                yield break;
+            }
             Transform nearestCivilian = FindNearest(civilians);
 
             if (nearestCivilian != null && Vector3.Distance(transform.position, nearestCivilian.position) < detectionRadius)
@@ -159,6 +169,13 @@ public class FSM : MonoBehaviour
 
         while (true)
         {
+            if (!IsDetected())
+            {
+                previousState = Phase1; // Guardar el estado actual
+                state = Evade;
+                yield break;
+            }
+           
             List<GameObject> detectingEnemies = new List<GameObject>();
 
             foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
@@ -234,19 +251,29 @@ public class FSM : MonoBehaviour
     {
         foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
         {
-            PatrollingAI ai = enemy.GetComponent<PatrollingAI>();
-            if (ai != null && ai.visionCamera != null)
+            Camera visionCamera = enemy.GetComponent<Camera>();
+            if (visionCamera != null)
             {
-                if (IsVisibleToCamera(ai.visionCamera))
+                if (IsVisibleToCamera(visionCamera))
                 {
                     return true;
                 }
+            }
+            float distance = Vector3.Distance(transform.position, enemy.transform.position);
+            if (distance < loseDistance) // Comprobación de derrota
+            {
+                Debug.Log("Game Over! Too close to an enemy.");
+                GameManager.Instance.LoseGame(); 
+                StopAllCoroutines();
+                enabled = false;
+                return true;
             }
 
             if (Vector3.Distance(transform.position, enemy.transform.position) < detectionRadius)
             {
                 return true;
             }
+           
         }
 
         return false;
@@ -259,11 +286,5 @@ public class FSM : MonoBehaviour
     }
 
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Enemy"))
-        {
-            GameManager.Instance.LoseGame();
-        }
-    }
+    
 }

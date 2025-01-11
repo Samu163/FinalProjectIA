@@ -25145,6 +25145,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8432679281733585392, guid: a24d15aaed80e5f47822bf7157d2e4d4,
         type: 3}
+      propertyPath: lostSightTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8432679281733585392, guid: a24d15aaed80e5f47822bf7157d2e4d4,
+        type: 3}
       propertyPath: waypoints.Array.data[0]
       value: 
       objectReference: {fileID: 1724605564}
@@ -25282,7 +25287,17 @@ PrefabInstance:
       objectReference: {fileID: 776481259}
     - target: {fileID: 3761018021487226878, guid: ba934ac3079b7bb4e893f92b9e315764,
         type: 3}
+      propertyPath: safeDistance
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3761018021487226878, guid: ba934ac3079b7bb4e893f92b9e315764,
+        type: 3}
       propertyPath: cops.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3761018021487226878, guid: ba934ac3079b7bb4e893f92b9e315764,
+        type: 3}
+      propertyPath: detectionRadius
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3761018021487226878, guid: ba934ac3079b7bb4e893f92b9e315764,
