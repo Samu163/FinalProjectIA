@@ -268,10 +268,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agent: {fileID: 3548362192673958820}
   visionCamera: {fileID: 3463379387583123067}
-  wanderRadius: 3
+  wanderRadius: 10
   detectionRange: 20
   fieldOfView: 60
-  wanderTimer: 5
+  wanderTimer: 2
 --- !u!195 &3548362192673958820
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -282,7 +282,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 0.1
+  m_Speed: 0.05
   m_Acceleration: 2
   avoidancePriority: 50
   m_AngularSpeed: 120
