@@ -59,7 +59,7 @@ public class RollerAgent : Agent
         if (distanceToTarget < 1.42f)
         {
             SetReward(1.0f);
-            GameManager.Instance.AddZombiePoint();
+          //  GameManager.Instance.AddZombiePoint();
             EndEpisode();
         }
     }

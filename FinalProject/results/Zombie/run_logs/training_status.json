@@ -2,22 +2,22 @@
     "Zombie": {
         "checkpoints": [
             {
-                "steps": 5817,
-                "file_path": "results\\Zombie\\Zombie\\Zombie-5817.onnx",
-                "reward": null,
-                "creation_time": 1736527637.2789464,
+                "steps": 382925,
+                "file_path": "results\\Zombie\\Zombie\\Zombie-382925.onnx",
+                "reward": 1.0,
+                "creation_time": 1736708726.110817,
                 "auxillary_file_paths": [
-                    "results\\Zombie\\Zombie\\Zombie-5817.pt"
+                    "results\\Zombie\\Zombie\\Zombie-382925.pt"
                 ]
             }
         ],
         "final_checkpoint": {
-            "steps": 5817,
+            "steps": 382925,
             "file_path": "results\\Zombie\\Zombie.onnx",
-            "reward": null,
-            "creation_time": 1736527637.2789464,
+            "reward": 1.0,
+            "creation_time": 1736708726.110817,
             "auxillary_file_paths": [
-                "results\\Zombie\\Zombie\\Zombie-5817.pt"
+                "results\\Zombie\\Zombie\\Zombie-382925.pt"
             ]
         }
     },
