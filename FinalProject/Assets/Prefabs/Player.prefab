@@ -98,14 +98,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7478225697116208144, guid: 6fb37f825ee63264b9c2600bf1a52006,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 8252863389574408054}
-    - targetCorrespondingSourceObject: {fileID: 7478225697116208144, guid: 6fb37f825ee63264b9c2600bf1a52006,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 4285874994477561519}
-    - targetCorrespondingSourceObject: {fileID: 7478225697116208144, guid: 6fb37f825ee63264b9c2600bf1a52006,
-        type: 3}
-      insertIndex: -1
       addedObject: {fileID: 2870674933975609151}
     - targetCorrespondingSourceObject: {fileID: 7478225697116208144, guid: 6fb37f825ee63264b9c2600bf1a52006,
         type: 3}
@@ -130,10 +122,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7bdf9c7eef37164a9a841314cbb53ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cops:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   treasures:
   - {fileID: 0}
   - {fileID: 0}
@@ -146,6 +134,7 @@ MonoBehaviour:
   detectionRadius: 1
   stealDistance: 1
   safeDistance: 10
+  loseDistance: 0.5
   statename: Search Supplies
 --- !u!195 &8459649700189751568
 NavMeshAgent:
@@ -169,56 +158,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!136 &8252863389574408054
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8750523923084558287}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 1.8403875
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.8228103, z: -0}
---- !u!54 &4285874994477561519
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8750523923084558287}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!114 &2870674933975609151
 MonoBehaviour:
   m_ObjectHideFlags: 0

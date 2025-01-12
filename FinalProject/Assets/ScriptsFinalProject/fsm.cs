@@ -1,38 +1,28 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.Rendering;
-using Unity.VisualScripting;
 
 public class FSM : MonoBehaviour
 {
     public GameObject[] treasures;
     public GameObject exit;
-    public Transform[] civilians;
     public Transform car;
     public float detectionRadius = 3f;
     public float stealDistance = 2f;
     public float safeDistance = 10f;
-    public float loseDistance = 0.5f;
-    public string statename = "Search Supplies";
-    public static FSM Instance;
+    public float loseDistance = 1.5f;
+
     private UnityEngine.AI.NavMeshAgent agent;
     private WaitForSeconds wait = new WaitForSeconds(0.05f);
     private delegate IEnumerator State();
     private State state;
-    private State previousState; // Nuevo: Almacena el estado previo
+    private State previouseState;
 
     void Start()
     {
-        Instance = this;
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         state = Phase1;
         StartCoroutine(StateMachine());
-    }
-
-    void Update()
-    {
-        statename = state.Method.Name;
     }
 
     IEnumerator StateMachine()
@@ -41,31 +31,34 @@ public class FSM : MonoBehaviour
             yield return StartCoroutine(state());
     }
 
+    // Fase 1: Recolectar tesoros y moverse a la salida
     IEnumerator Phase1()
     {
-        Debug.Log("State: Search Supplies");
+        previouseState = Phase1;
+        Debug.Log("State: Phase1 (Search Supplies)");
 
         while (true)
         {
             if (IsDetected())
             {
-                previousState = Phase1; // Guardar el estado actual
                 state = Evade;
                 yield break;
             }
 
+            // Buscar el tesoro más cercano
             GameObject nearestTreasure = FindNearest(treasures);
 
             if (nearestTreasure != null)
             {
                 agent.SetDestination(nearestTreasure.transform.position);
 
+                // Dirigirse al tesoro
                 while (Vector3.Distance(transform.position, nearestTreasure.transform.position) > stealDistance)
                 {
                     if (IsDetected())
                     {
-                        previousState = Phase1;
                         state = Evade;
+                        
                         yield break;
                     }
                     yield return wait;
@@ -76,134 +69,62 @@ public class FSM : MonoBehaviour
             }
             else
             {
+                // Si no quedan tesoros, dirigirse a la salida
                 agent.SetDestination(exit.transform.position);
 
                 while (Vector3.Distance(transform.position, exit.transform.position) > stealDistance)
                 {
                     if (IsDetected())
                     {
-                        previousState = Phase1;
                         state = Evade;
                         yield break;
                     }
                     yield return wait;
                 }
 
-                Debug.Log("Exit reached. Spawning zombies and starting Phase 2.");
-                state = GoToPhase2;
+                Debug.Log("Exit reached. Starting Phase2.");
                 GameManager.Instance.StartPhase2();
+                agent.enabled = false;
+                transform.position = GameManager.Instance.spawnPointPhase2.position;
+                agent.enabled = true;
+                state = Phase2;
                 yield break;
             }
         }
     }
 
-    IEnumerator GoToPhase2()
-    {
-        Debug.Log("State: GoToPhase2");
-
-        agent.enabled = false;
-        transform.position = GameManager.Instance.spawnPointPhase2.position;
-        agent.enabled = true;
-        yield return null;
-
-        state = Phase2;
-    }
-
-   
-
-    IEnumerator Evade()
-    {
-        Debug.Log("State: Evade");
-
-        while (true)
-        {
-            // Comprueba si todavía hay detección
-            if (!IsDetected())
-            {
-                Debug.Log("Evaded successfully. Returning to target.");
-
-                // Regresa al estado actual o por defecto
-                if (previousState == Phase2)
-                {
-                    state = Phase2; // Regresa a la fase 2 para dirigirse al coche
-                }
-                else if (previousState != null)
-                {
-                    state = previousState;
-                }
-                else
-                {
-                    state = Phase1; // Estado por defecto
-                }
-
-                yield break;
-            }
-
-            // Encuentra todos los enemigos detectando
-            List<GameObject> detectingEnemies = new List<GameObject>();
-            foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
-            {
-                PatrollingAI ai = enemy.GetComponent<PatrollingAI>();
-                if (ai != null && ai.visionCamera != null && IsVisibleToCamera(ai.visionCamera))
-                {
-                    detectingEnemies.Add(enemy);
-                }
-            }
-
-            // Calcula un punto de escape basado en la dirección opuesta a los enemigos
-            if (detectingEnemies.Count > 0)
-            {
-                Vector3 evadeDirection = Vector3.zero;
-                foreach (GameObject enemy in detectingEnemies)
-                {
-                    evadeDirection += (transform.position - enemy.transform.position).normalized;
-                }
-
-                evadeDirection /= detectingEnemies.Count;
-                Vector3 evadePoint = transform.position + evadeDirection * safeDistance;
-
-                // Mueve al ladrón hacia el punto de evasión
-                agent.SetDestination(evadePoint);
-            }
-
-            yield return wait;
-        }
-    }
-
+    // Fase 2: Ir al coche y ganar
     IEnumerator Phase2()
     {
-        Debug.Log("State: Escape to Car");
+        previouseState = Phase2;
+        Debug.Log("State: Phase2 (Go to Car)");
 
         while (true)
         {
             if (IsDetected())
             {
-                Debug.Log("Detected! Switching to Evade state.");
-                previousState = Phase2; 
-                state = Evade;         
+                state = Evade;
                 yield break;
             }
 
-            // Si no está detectado, continúa hacia el coche
+            // Dirigirse al coche
             if (car != null)
             {
                 agent.SetDestination(car.position);
 
-                while (Vector3.Distance(transform.position, car.position) > stealDistance*3)
+                while (Vector3.Distance(transform.position, car.position) > stealDistance)
                 {
                     if (IsDetected())
                     {
-                        Debug.Log("Detected! Switching to Evade state.");
-                        previousState = Phase2;
                         state = Evade;
                         yield break;
                     }
                     yield return wait;
                 }
 
-                
                 Debug.Log("Car reached. You win!");
                 GameManager.Instance.WinGame();
+                enabled = false;
                 yield break;
             }
             else
@@ -215,7 +136,97 @@ public class FSM : MonoBehaviour
         }
     }
 
+    // Evitar enemigos
+    IEnumerator Evade()
+    {
+        Debug.Log("State: Evade");
 
+        while (true)
+        {
+            if (!IsDetected())
+            {
+                Debug.Log("Evaded successfully. Returning to previous state.");
+                if (previouseState == Phase2)
+                {
+                    state = Phase2; // Regresa a Phase2
+                }
+                else
+                {
+                    state = Phase1; // Regresa a Phase1 por defecto
+                }
+                yield break;
+            }
+
+            // Calcular dirección opuesta a los enemigos detectados
+            List<GameObject> detectingEnemies = new List<GameObject>();
+            foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
+            {
+                if (IsEnemyDetecting(enemy))
+                {
+                    detectingEnemies.Add(enemy);
+                }
+            }
+
+            if (detectingEnemies.Count > 0)
+            {
+                Vector3 evadeDirection = Vector3.zero;
+                foreach (GameObject enemy in detectingEnemies)
+                {
+                    evadeDirection += (transform.position - enemy.transform.position).normalized;
+                }
+
+                evadeDirection /= detectingEnemies.Count;
+                Vector3 evadePoint = transform.position + evadeDirection * safeDistance;
+
+                agent.SetDestination(evadePoint);
+            }
+
+            yield return wait;
+        }
+    }
+
+    // Detecta si el enemigo está cerca o visible
+    private bool IsEnemyDetecting(GameObject enemy)
+    {
+        Camera visionCamera = enemy.GetComponent<Camera>();
+        if (visionCamera != null && IsVisibleToCamera(visionCamera))
+        {
+            return true;
+        }
+
+        float distance = Vector3.Distance(transform.position, enemy.transform.position);
+        return distance < detectionRadius;
+    }
+
+    // Determina si el jugador es detectado
+    private bool IsDetected()
+    {
+        foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
+        {
+            if (IsEnemyDetecting(enemy))
+            {
+                float distance = Vector3.Distance(transform.position, enemy.transform.position);
+                if (distance < loseDistance)
+                {
+                    Debug.Log("Game Over! Too close to an enemy.");
+                    GameManager.Instance.LoseGame();
+                    enabled = false;
+                    return true;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Verifica si el jugador es visible para la cámara del enemigo
+    private bool IsVisibleToCamera(Camera camera)
+    {
+        Vector3 viewportPoint = camera.WorldToViewportPoint(transform.position);
+        return viewportPoint.z > 0 && viewportPoint.x > 0 && viewportPoint.x < 1 && viewportPoint.y > 0 && viewportPoint.y < 1;
+    }
+
+    // Encuentra el objeto más cercano en una lista
     private GameObject FindNearest(GameObject[] objects)
     {
         GameObject nearest = null;
@@ -236,63 +247,4 @@ public class FSM : MonoBehaviour
 
         return nearest;
     }
-
-    private Transform FindNearest(Transform[] transforms)
-    {
-        Transform nearest = null;
-        float minDistance = Mathf.Infinity;
-
-        foreach (Transform t in transforms)
-        {
-            float distance = Vector3.Distance(transform.position, t.position);
-            if (distance < minDistance)
-            {
-                nearest = t;
-                minDistance = distance;
-            }
-        }
-
-        return nearest;
-    }
-
-    private bool IsDetected()
-    {
-        foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
-        {
-            Camera visionCamera = enemy.GetComponent<Camera>();
-            if (visionCamera != null)
-            {
-                if (IsVisibleToCamera(visionCamera))
-                {
-                    return true;
-                }
-            }
-            float distance = Vector3.Distance(transform.position, enemy.transform.position);
-            if (distance < loseDistance) // Comprobación de derrota
-            {
-                Debug.Log("Game Over! Too close to an enemy.");
-                GameManager.Instance.LoseGame(); 
-                StopAllCoroutines();
-                enabled = false;
-                return true;
-            }
-
-            if (Vector3.Distance(transform.position, enemy.transform.position) < detectionRadius)
-            {
-                return true;
-            }
-           
-        }
-
-        return false;
-    }
-
-    private bool IsVisibleToCamera(Camera camera)
-    {
-        Vector3 viewportPoint = camera.WorldToViewportPoint(transform.position);
-        return viewportPoint.z > 0 && viewportPoint.x > 0 && viewportPoint.x < 1 && viewportPoint.y > 0 && viewportPoint.y < 1;
-    }
-
-
-    
 }
