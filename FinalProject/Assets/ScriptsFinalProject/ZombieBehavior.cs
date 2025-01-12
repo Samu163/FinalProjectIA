@@ -27,7 +27,7 @@ public class ZombieBehavior : MonoBehaviour
             agent = GetComponent<NavMeshAgent>();
         }
 
-        GameObject playerObject = GameObject.FindWithTag("Player");
+        GameObject playerObject = GameObject.FindWithTag("robber");
         if (playerObject != null)
         {
             player = playerObject.transform;

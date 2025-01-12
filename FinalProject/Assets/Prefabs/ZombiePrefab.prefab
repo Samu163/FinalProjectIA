@@ -263,7 +263,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agent: {fileID: 3548362192673958820}
   visionCamera: {fileID: 3463379387583123067}
-  wanderRadius: 10
+  wanderRadius: 3
   detectionRange: 20
   fieldOfView: 60
   wanderTimer: 5
