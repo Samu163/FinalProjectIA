@@ -1,68 +1,81 @@
-
 using UnityEngine;
 
 public class Flock : MonoBehaviour
 {
     float speed;
     bool turning = false;
-    public Transform leader;
 
+    // El líder asignado desde FlockManager
+    private Transform leader;
 
     void Start()
     {
         speed = Random.Range(FlockManager.FM.minSpeed, FlockManager.FM.maxSpeed);
-        leader = FlockManager.FM.leader.transform;
     }
 
     void Update()
     {
-        Bounds b = new Bounds(FlockManager.FM.initialPosition.position, FlockManager.FM.flyLimits * 2);
-
-        if (!b.Contains(transform.position))
+        // Asignar líder desde FlockManager
+        if (FlockManager.FM.leader != null)
         {
-            turning = true;
+            leader = FlockManager.FM.leader.transform;
         }
         else
         {
-            turning = false;
+            Debug.LogWarning("Leader not assigned in FlockManager.");
+            return;
         }
+
+        // Límite de movimiento del FlockManager
+        Bounds b = new Bounds(FlockManager.FM.initialPosition.position, FlockManager.FM.flyLimits * 2);
+
+        // Detectar si está fuera de los límites
+        turning = !b.Contains(transform.position);
 
         if (turning)
         {
-            Vector3 direction = FlockManager.FM.initialPosition.position - transform.position;
-            direction.y = 0; // Mantén la dirección horizontal
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), FlockManager.FM.rotationSpeed * Time.deltaTime);
-          
+            MoveBackToBounds();
         }
         else
         {
+            // Seguir al líder si está dentro de la distancia de influencia
             if (Vector3.Distance(transform.position, leader.position) < FlockManager.FM.leader.influenceDistance)
             {
                 FollowLeader();
             }
             else
             {
-                if (Random.Range(0, 100) < 10)
-                {
-                    speed = Random.Range(FlockManager.FM.minSpeed, FlockManager.FM.maxSpeed);
-                }
-                if (Random.Range(0, 100) < 10)
-                {
-                    ApplyFlockingRules();
-                }
+                ApplyFlockingRules();
+            }
+
+            // Cambiar la velocidad aleatoriamente
+            if (Random.Range(0, 100) < 10)
+            {
+                speed = Random.Range(FlockManager.FM.minSpeed, FlockManager.FM.maxSpeed);
             }
         }
 
+        // Movimiento final
         transform.Translate(0, 0, speed * Time.deltaTime);
+    }
+
+    void MoveBackToBounds()
+    {
+        Vector3 direction = FlockManager.FM.initialPosition.position - transform.position;
+        direction.y = 0; // Mantener en el plano horizontal
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), FlockManager.FM.rotationSpeed * Time.deltaTime);
     }
 
     void FollowLeader()
     {
         if (leader != null)
         {
-            Vector3 leaderDirection = leader.position - transform.position;
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(leaderDirection), FlockManager.FM.rotationSpeed * Time.deltaTime);
-            ApplyFlockingRules();
+            Vector3 directionToLeader = leader.position - transform.position;
+            directionToLeader.y = 0; // Mantener en el plano horizontal
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(directionToLeader), FlockManager.FM.rotationSpeed * Time.deltaTime);
+
+            // Ajustar la velocidad al acercarse al líder
+            speed = Mathf.Lerp(speed, FlockManager.FM.maxSpeed, Time.deltaTime);
         }
     }
 
@@ -70,45 +83,44 @@ public class Flock : MonoBehaviour
     {
         GameObject[] zombies = FlockManager.FM.allZombies;
 
-        Vector3 vcentre = Vector3.zero;
-        Vector3 vavoid = Vector3.zero;
-        float gSpeed = 0.01f;
-        float nDistance;
+        Vector3 center = Vector3.zero;
+        Vector3 avoid = Vector3.zero;
+        float groupSpeed = 0f;
         int groupSize = 0;
 
-        foreach (GameObject z in zombies)
+        foreach (GameObject zombie in zombies)
         {
-            if (z != this.gameObject)
+            if (zombie != this.gameObject)
             {
-                nDistance = Vector3.Distance(z.transform.position, this.transform.position);
+                float distance = Vector3.Distance(zombie.transform.position, this.transform.position);
 
-                if (nDistance < FlockManager.FM.neighbourDistance)
+                if (distance < FlockManager.FM.neighbourDistance)
                 {
-                    vcentre += z.transform.position;
+                    center += zombie.transform.position;
                     groupSize++;
 
-                    if (nDistance < 1.0f)
+                    if (distance < 1.0f)
                     {
-                        vavoid += this.transform.position - z.transform.position;
+                        avoid += this.transform.position - zombie.transform.position;
                     }
 
-                    Flock anotherFlock = z.GetComponent<Flock>();
-                    gSpeed += anotherFlock.speed;
+                    Flock otherFlock = zombie.GetComponent<Flock>();
+                    if (otherFlock != null)
+                    {
+                        groupSpeed += otherFlock.speed;
+                    }
                 }
             }
         }
 
         if (groupSize > 0)
         {
-            vcentre = vcentre / groupSize + (FlockManager.FM.goalPos - this.transform.position);
-            speed = gSpeed / groupSize;
+            center = center / groupSize + (FlockManager.FM.goalPos - this.transform.position);
+            speed = Mathf.Clamp(groupSpeed / groupSize, FlockManager.FM.minSpeed, FlockManager.FM.maxSpeed);
 
-            if (speed > FlockManager.FM.maxSpeed)
-            {
-                speed = FlockManager.FM.maxSpeed;
-            }
+            Vector3 direction = (center + avoid) - transform.position;
+            direction.y = 0;
 
-            Vector3 direction = (vcentre + vavoid) - this.transform.position;
             if (direction != Vector3.zero)
             {
                 transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), FlockManager.FM.rotationSpeed * Time.deltaTime);
