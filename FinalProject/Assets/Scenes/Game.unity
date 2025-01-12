@@ -7150,7 +7150,7 @@ MonoBehaviour:
   zombieSpawner: {fileID: 1290489773}
   boxInstantiator: {fileID: 1469052051}
   uiController: {fileID: 1104323372}
-  maxScore: 99
+  maxScore: 75
   currentScore: 0
 --- !u!4 &386538913
 Transform:
