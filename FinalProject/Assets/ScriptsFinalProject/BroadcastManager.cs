@@ -9,7 +9,7 @@ public class BroadcastManager : MonoBehaviour
 
     void Start()
     {
-        GameObject playerObject = GameObject.FindWithTag("Player");
+        GameObject playerObject = GameObject.FindWithTag("robber");
         if (playerObject != null)
         {
             player = playerObject.transform;

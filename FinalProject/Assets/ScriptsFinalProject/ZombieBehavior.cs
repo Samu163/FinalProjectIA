@@ -87,7 +87,7 @@ public class ZombieBehavior : MonoBehaviour
         {
             if (Physics.Raycast(visionCamera.transform.position, directionToPlayer, out RaycastHit hit, detectionRange))
             {
-                if (hit.collider.CompareTag("Player"))
+                if (hit.collider.CompareTag("robber"))
                 {
                     ogZombie = true;
                     isWandering = false;

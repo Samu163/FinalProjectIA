@@ -4,6 +4,7 @@ public class ZombieLookAtTargetSmooth : MonoBehaviour
 {
     public Transform target; // Arrastra aquí el objeto que será el objetivo
     public float rotationSpeed = 5f; // Velocidad de rotación (ajustable desde el inspector)
+   
 
     void Update()
     {

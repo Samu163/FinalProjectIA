@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class UiController : MonoBehaviour
 {
     public GameObject youWinPopUp;
     public GameObject youLosePopUp;
+    public TextMeshProUGUI scoreText;
 
     // Start is called before the first frame update
     void Start()
@@ -17,7 +19,7 @@ public class UiController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        scoreText.text = "Zombie Points: " + GameManager.Instance.currentScore + "/" + GameManager.Instance.maxScore;
     }
 
     public void ShowYouWinPopUp()
@@ -35,6 +37,6 @@ public class UiController : MonoBehaviour
     public void LoadMainMenu()
     {
         Time.timeScale = 1;
-        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+        Application.Quit();
     }
 }

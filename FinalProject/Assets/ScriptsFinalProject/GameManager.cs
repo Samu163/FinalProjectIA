@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     public FSM player;
     public CinemachineVirtualCamera cameraPhase1;
     public CinemachineVirtualCamera cameraPhase2;
+    public CinemachineVirtualCamera cameraForAgent;
     public ZombieSpawner zombieSpawner;
     public BoxInstantiator boxInstantiator;
 
@@ -20,8 +21,15 @@ public class GameManager : MonoBehaviour
 
     public UiController uiController;
 
+    public int maxScore = 25;
+    public int currentScore;
+
+    private int currentPhase = 0;
+    private bool isOnAgent = false;
+
     private void Awake()
     {
+        currentScore = 0;
         Instance = this;
         DontDestroyOnLoad(this.gameObject);
     }
@@ -36,8 +44,34 @@ public class GameManager : MonoBehaviour
 
     }
 
+    public void SeeAgent()
+    {
+
+        if (!isOnAgent)
+        {
+            ActivateCamera(cameraForAgent);
+            isOnAgent = true;
+        }
+        else
+        {
+            isOnAgent = false;
+            if (currentPhase == 1)
+            {
+                ActivateCamera(cameraPhase1);
+
+            }
+            else if(currentPhase == 2)
+            {
+                ActivateCamera(cameraPhase2);
+
+            }
+
+        }
+    }
+
     public void StartPhase1()
     {
+        currentPhase = 1;
         ActivateCamera(cameraPhase1);
     }
 
@@ -46,6 +80,8 @@ public class GameManager : MonoBehaviour
         player.transform.position = spawnPointPhase2.position;
 
         zombieSpawner.SpawnZombies();
+        currentPhase = 2;
+        isOnAgent = false;
         ActivateCamera(cameraPhase2);
     }
 
@@ -60,6 +96,7 @@ public class GameManager : MonoBehaviour
 
     private void ActivateCamera(CinemachineVirtualCamera activeCamera)
     {
+        
         allSceneCameras = Camera.allCameras;
         DisableNonCinemachineCameras();
 
@@ -81,6 +118,16 @@ public class GameManager : MonoBehaviour
     {
         DisableNonCinemachineCameras();
         cam.enabled = true;
+    }
+
+
+    public void AddZombiePoint()
+    {
+        currentScore++;
+        if (currentScore >= maxScore)
+        {
+            LoseGame();
+        }
     }
 
 }

@@ -87,6 +87,7 @@ public class FSM : MonoBehaviour
                 agent.enabled = false;
                 transform.position = GameManager.Instance.spawnPointPhase2.position;
                 agent.enabled = true;
+                detectionRadius = 1.4f;
                 state = Phase2;
                 yield break;
             }

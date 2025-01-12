@@ -8,6 +8,7 @@ TagManager:
   - Zombie
   - robber
   - Enemy
+  - Obstacle
   layers:
   - Default
   - TransparentFX
