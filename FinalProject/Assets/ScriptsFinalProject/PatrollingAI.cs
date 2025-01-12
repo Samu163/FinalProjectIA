@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-
 public class PatrollingAI : MonoBehaviour
 {
     public Transform[] waypoints;      // Waypoints para patrullar
@@ -13,35 +12,44 @@ public class PatrollingAI : MonoBehaviour
     public float patrolSpeed = 3.5f;  // Velocidad durante la patrulla
     public float chaseSpeed = 6f;     // Velocidad durante la persecución
 
-    private int currentWaypointIndex;
+    private int currentWaypointIndex = 0;
     private NavMeshAgent agent;
     private Transform targetRobber;   // Referencia al "robber" detectado
-    private float lostSightTimer;
+    private float lostSightTimer = 0f;
     private enum AIState { Patrolling, Chasing }
-    private AIState currentState;
+    private AIState currentState = AIState.Patrolling;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        currentState = AIState.Patrolling;
-
-        // Configura la velocidad inicial para patrullaje
         agent.speed = patrolSpeed;
 
-        // Inicia la patrulla
-        agent.SetDestination(waypoints[currentWaypointIndex].position);
-        StartCoroutine(Patrol());
+        // Inicia el patrullaje
+        StartPatrolling();
     }
 
     void Update()
     {
-        if (currentState == AIState.Patrolling)
+        switch (currentState)
         {
-            DetectRobber();
+            case AIState.Patrolling:
+                DetectRobber();
+                break;
+            case AIState.Chasing:
+                ChaseRobber();
+                break;
         }
-        else if (currentState == AIState.Chasing)
+    }
+
+    void StartPatrolling()
+    {
+        currentState = AIState.Patrolling;
+        agent.speed = patrolSpeed;
+
+        if (waypoints.Length > 0)
         {
-            ChaseRobber();
+            agent.SetDestination(waypoints[currentWaypointIndex].position);
+            StartCoroutine(Patrol());
         }
     }
 
@@ -64,86 +72,70 @@ public class PatrollingAI : MonoBehaviour
 
     void DetectRobber()
     {
-        if (visionCamera == null)
-        {
-            Debug.LogError("La cámara de visión no está asignada.");
-            return;
-        }
+        if (visionCamera == null) return;
 
-        // Encuentra todos los objetos con la etiqueta "robber"
         GameObject[] robbers = GameObject.FindGameObjectsWithTag("robber");
 
         foreach (GameObject robber in robbers)
         {
-            // Convierte la posición del "robber" al espacio de la pantalla de la cámara
             Vector3 viewportPoint = visionCamera.WorldToViewportPoint(robber.transform.position);
 
-            // Verifica si el "robber" está dentro del campo de visión (entre 0 y 1 en la pantalla)
             if (viewportPoint.z > 0 && viewportPoint.x > 0 && viewportPoint.x < 1 && viewportPoint.y > 0 && viewportPoint.y < 1)
             {
-                // Realiza un raycast para asegurarte de que no hay obstáculos entre la cámara y el "robber"
-                Ray ray = visionCamera.ViewportPointToRay(new Vector3(viewportPoint.x, viewportPoint.y, 0));
+                Ray ray = visionCamera.ViewportPointToRay(viewportPoint);
                 if (Physics.Raycast(ray, out RaycastHit hit))
                 {
                     if (hit.collider.CompareTag("robber"))
                     {
                         targetRobber = hit.transform;
-                        currentState = AIState.Chasing;
                         lostSightTimer = lostSightTime;
-
-                        // Cambia la velocidad a la de persecución
-                        agent.speed = chaseSpeed;
-
-                        break;
+                        StartChasing();
+                        return;
                     }
                 }
             }
         }
     }
 
+    void StartChasing()
+    {
+        currentState = AIState.Chasing;
+        agent.speed = chaseSpeed;
+    }
+
     void ChaseRobber()
     {
         if (targetRobber == null)
         {
-            currentState = AIState.Patrolling;
-
-            // Cambia la velocidad a la de patrullaje
-            agent.speed = patrolSpeed;
-
-            StartCoroutine(Patrol());
+            StopChasing();
             return;
         }
 
-        // Persigue al "robber"
         agent.SetDestination(targetRobber.position);
 
-        // Verifica si el "robber" todavía está en el campo de visión
         Vector3 viewportPoint = visionCamera.WorldToViewportPoint(targetRobber.position);
         if (viewportPoint.z <= 0 || viewportPoint.x < 0 || viewportPoint.x > 1 || viewportPoint.y < 0 || viewportPoint.y > 1)
         {
             lostSightTimer -= Time.deltaTime;
             if (lostSightTimer <= 0)
             {
-                // Si pierde de vista al "robber", vuelve a patrullar
-                targetRobber = null;
-                currentState = AIState.Patrolling;
-
-                // Cambia la velocidad a la de patrullaje
-                agent.speed = patrolSpeed;
-
-                StartCoroutine(Patrol());
+                StopChasing();
             }
         }
         else
         {
-            // Si el "robber" está en vista, reinicia el temporizador
             lostSightTimer = lostSightTime;
         }
     }
 
+    void StopChasing()
+    {
+        targetRobber = null;
+        StartPatrolling();
+    }
+
     void OnDrawGizmos()
     {
-        // Opcional: Dibuja un frustum para visualizar el campo de visión de la cámara
         if (visionCamera != null)
         {
             Gizmos.color = Color.blue;
@@ -152,5 +144,3 @@ public class PatrollingAI : MonoBehaviour
         }
     }
 }
-
-

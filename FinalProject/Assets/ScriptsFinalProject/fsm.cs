@@ -109,59 +109,7 @@ public class FSM : MonoBehaviour
         state = Phase2;
     }
 
-    IEnumerator Phase2()
-    {
-        Debug.Log("State: Escape or Rescue");
-
-        while (true)
-        {
-
-            if (IsDetected())
-            {
-                previousState = Phase1; // Guardar el estado actual
-                state = Evade;
-                yield break;
-            }
-            Transform nearestCivilian = FindNearest(civilians);
-
-            if (nearestCivilian != null && Vector3.Distance(transform.position, nearestCivilian.position) < detectionRadius)
-            {
-                agent.SetDestination(nearestCivilian.position);
-
-                while (Vector3.Distance(transform.position, nearestCivilian.position) > stealDistance)
-                {
-                    if (IsDetected())
-                    {
-                        previousState = Phase2; // Guardar el estado actual
-                        state = Evade;
-                        yield break;
-                    }
-                    yield return wait;
-                }
-
-                Debug.Log("Civilian rescued!");
-            }
-            else
-            {
-                agent.SetDestination(car.position);
-
-                while (Vector3.Distance(transform.position, car.position) > stealDistance)
-                {
-                    if (IsDetected())
-                    {
-                        previousState = Phase2; // Guardar el estado actual
-                        state = Evade;
-                        yield break;
-                    }
-                    yield return wait;
-                }
-
-                Debug.Log("Car reached. You win!");
-                GameManager.Instance.WinGame();
-                yield break;
-            }
-        }
-    }
+   
 
     IEnumerator Evade()
     {
@@ -169,15 +117,30 @@ public class FSM : MonoBehaviour
 
         while (true)
         {
+            // Comprueba si todavía hay detección
             if (!IsDetected())
             {
-                previousState = Phase1; // Guardar el estado actual
-                state = Evade;
+                Debug.Log("Evaded successfully. Returning to target.");
+
+                // Regresa al estado actual o por defecto
+                if (previousState == Phase2)
+                {
+                    state = Phase2; // Regresa a la fase 2 para dirigirse al coche
+                }
+                else if (previousState != null)
+                {
+                    state = previousState;
+                }
+                else
+                {
+                    state = Phase1; // Estado por defecto
+                }
+
                 yield break;
             }
-           
-            List<GameObject> detectingEnemies = new List<GameObject>();
 
+            // Encuentra todos los enemigos detectando
+            List<GameObject> detectingEnemies = new List<GameObject>();
             foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
             {
                 PatrollingAI ai = enemy.GetComponent<PatrollingAI>();
@@ -187,26 +150,71 @@ public class FSM : MonoBehaviour
                 }
             }
 
-            if (detectingEnemies.Count == 0)
+            // Calcula un punto de escape basado en la dirección opuesta a los enemigos
+            if (detectingEnemies.Count > 0)
             {
-                Debug.Log("Evaded successfully. Returning to previous state.");
-                state = previousState; // Regresa al estado previo
-                yield break;
+                Vector3 evadeDirection = Vector3.zero;
+                foreach (GameObject enemy in detectingEnemies)
+                {
+                    evadeDirection += (transform.position - enemy.transform.position).normalized;
+                }
+
+                evadeDirection /= detectingEnemies.Count;
+                Vector3 evadePoint = transform.position + evadeDirection * safeDistance;
+
+                // Mueve al ladrón hacia el punto de evasión
+                agent.SetDestination(evadePoint);
             }
 
-            Vector3 evadeDirection = Vector3.zero;
-            foreach (GameObject enemy in detectingEnemies)
-            {
-                evadeDirection += (transform.position - enemy.transform.position).normalized;
-            }
-
-            evadeDirection /= detectingEnemies.Count;
-            Vector3 evadePoint = transform.position + evadeDirection * safeDistance;
-
-            agent.SetDestination(evadePoint);
             yield return wait;
         }
     }
+
+    IEnumerator Phase2()
+    {
+        Debug.Log("State: Escape to Car");
+
+        while (true)
+        {
+            if (IsDetected())
+            {
+                Debug.Log("Detected! Switching to Evade state.");
+                previousState = Phase2; 
+                state = Evade;         
+                yield break;
+            }
+
+            // Si no está detectado, continúa hacia el coche
+            if (car != null)
+            {
+                agent.SetDestination(car.position);
+
+                while (Vector3.Distance(transform.position, car.position) > stealDistance*3)
+                {
+                    if (IsDetected())
+                    {
+                        Debug.Log("Detected! Switching to Evade state.");
+                        previousState = Phase2;
+                        state = Evade;
+                        yield break;
+                    }
+                    yield return wait;
+                }
+
+                
+                Debug.Log("Car reached. You win!");
+                GameManager.Instance.WinGame();
+                yield break;
+            }
+            else
+            {
+                Debug.LogWarning("Car target is missing.");
+            }
+
+            yield return wait;
+        }
+    }
+
 
     private GameObject FindNearest(GameObject[] objects)
     {

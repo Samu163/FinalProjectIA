@@ -27,6 +27,12 @@ public class FlockManager : MonoBehaviour
     [Range(1.0f, 5.0f)]
     public float rotationSpeed;
 
+    private void Awake()
+    {
+        FM = this;
+        
+    }
+
     void Start()
     {
         allZombies = new GameObject[numZombies];
@@ -39,9 +45,9 @@ public class FlockManager : MonoBehaviour
                 Random.Range(-flyLimits.z, flyLimits.z));
 
             allZombies[i] = Instantiate(zombiePrefab, pos, Quaternion.identity);
+            
         }
 
-        FM = this;
         goalPos = initialPosition.position;
     }
 

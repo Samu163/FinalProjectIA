@@ -64,10 +64,10 @@ Camera:
     x: 0
     y: 0
     width: 1
-    height: 0.6
+    height: 1
   near clip plane: 0.3
-  far clip plane: 1.13
-  field of view: 88.2
+  far clip plane: 0.53
+  field of view: 35.6
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -266,7 +266,7 @@ MonoBehaviour:
   - {fileID: 0}
   waitTime: 1
   visionCamera: {fileID: 4805569085650038778}
-  lostSightTime: 3
+  lostSightTime: 0
   patrolSpeed: 1
   chaseSpeed: 1.2
 --- !u!195 &2554484722288950997

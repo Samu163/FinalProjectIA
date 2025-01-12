@@ -121,7 +121,7 @@ NavMeshSettings:
     preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
-  m_NavMeshData: {fileID: 23800000, guid: 03d70d084d5b04f4aa406950e9f4d365, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: 4b14a7d9833aeb246a78bb6cfa776a51, type: 2}
 --- !u!1 &8681868
 GameObject:
   m_ObjectHideFlags: 0
@@ -4537,8 +4537,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.012212662, y: 0.8494366, z: -0.5270603, w: 0.02271478}
-  m_LocalPosition: {x: 9.9230385, y: 9.561005, z: 0.9709283}
+  m_LocalRotation: {x: 0.0004910053, y: 0.761406, z: -0.6482638, w: 0.0038420795}
+  m_LocalPosition: {x: 12.181049, y: 13.528481, z: -2.7988257}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7476,7 +7476,7 @@ PrefabInstance:
     - target: {fileID: 1279437348525479949, guid: e2e682b966e3f644392ffbfab511e0e2,
         type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1279437348525638701, guid: e2e682b966e3f644392ffbfab511e0e2,
         type: 3}
@@ -8718,15 +8718,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f725183ad8397b41ad372887a481db6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  civilianPrefab: {fileID: 3604147549011300052, guid: 22b930d46e7cf454e9526bf465f1f43a,
-    type: 3}
-  positions:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 2001044808}
-  civilians: []
 --- !u!4 &642689417
 Transform:
   m_ObjectHideFlags: 0
@@ -10237,7 +10228,7 @@ PrefabInstance:
     - target: {fileID: 1279437348525479949, guid: e2e682b966e3f644392ffbfab511e0e2,
         type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1279437348525638701, guid: e2e682b966e3f644392ffbfab511e0e2,
         type: 3}
@@ -11587,7 +11578,7 @@ PrefabInstance:
     - target: {fileID: 1279437348525479949, guid: e2e682b966e3f644392ffbfab511e0e2,
         type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1279437348525638701, guid: e2e682b966e3f644392ffbfab511e0e2,
         type: 3}
@@ -16094,8 +16085,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1258437529}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.012212662, y: 0.8494366, z: -0.5270603, w: 0.02271478}
-  m_LocalPosition: {x: 9.9230385, y: 9.561005, z: 0.9709283}
+  m_LocalRotation: {x: 0.0004910053, y: 0.761406, z: -0.6482638, w: 0.0038420795}
+  m_LocalPosition: {x: 12.181049, y: 13.528481, z: -2.7988257}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -16118,7 +16109,7 @@ PrefabInstance:
     - target: {fileID: 1279437348525479949, guid: e2e682b966e3f644392ffbfab511e0e2,
         type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1279437348525638701, guid: e2e682b966e3f644392ffbfab511e0e2,
         type: 3}
@@ -23235,7 +23226,7 @@ PrefabInstance:
     - target: {fileID: 1279437348525479949, guid: e2e682b966e3f644392ffbfab511e0e2,
         type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1279437348525638701, guid: e2e682b966e3f644392ffbfab511e0e2,
         type: 3}
@@ -24303,6 +24294,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Ground_03
+      objectReference: {fileID: 0}
+    - target: {fileID: 8957304962413023527, guid: 3f9b178ccd3b86f4ebbfc1f5a2815e56,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -28757,8 +28753,13 @@ PrefabInstance:
       objectReference: {fileID: 776481259}
     - target: {fileID: 3761018021487226878, guid: ba934ac3079b7bb4e893f92b9e315764,
         type: 3}
+      propertyPath: loseDistance
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3761018021487226878, guid: ba934ac3079b7bb4e893f92b9e315764,
+        type: 3}
       propertyPath: safeDistance
-      value: 1
+      value: 1.74
       objectReference: {fileID: 0}
     - target: {fileID: 3761018021487226878, guid: ba934ac3079b7bb4e893f92b9e315764,
         type: 3}
@@ -28768,7 +28769,7 @@ PrefabInstance:
     - target: {fileID: 3761018021487226878, guid: ba934ac3079b7bb4e893f92b9e315764,
         type: 3}
       propertyPath: detectionRadius
-      value: 1
+      value: 2.51
       objectReference: {fileID: 0}
     - target: {fileID: 3761018021487226878, guid: ba934ac3079b7bb4e893f92b9e315764,
         type: 3}

@@ -7,9 +7,11 @@ public class Flock : MonoBehaviour
     bool turning = false;
     public Transform leader;
 
+
     void Start()
     {
         speed = Random.Range(FlockManager.FM.minSpeed, FlockManager.FM.maxSpeed);
+        leader = FlockManager.FM.leader.transform;
     }
 
     void Update()
@@ -28,7 +30,9 @@ public class Flock : MonoBehaviour
         if (turning)
         {
             Vector3 direction = FlockManager.FM.initialPosition.position - transform.position;
+            direction.y = 0; // Mantén la dirección horizontal
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), FlockManager.FM.rotationSpeed * Time.deltaTime);
+          
         }
         else
         {
